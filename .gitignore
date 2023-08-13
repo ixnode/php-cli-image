@@ -1,0 +1,17 @@
+###> defaults ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/var/
+/vendor/
+###< defaults ###
+
+###> ide ###
+/.idea
+###< ide ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+

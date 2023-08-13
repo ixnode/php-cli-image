@@ -1,0 +1,142 @@
+{
+  "name": "ixnode/php-cli-image",
+  "description": "PHP Cli Image - This library converts a given image to ASCII string.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": ["php", "cli", "image", "ascii", "gif", "jpg", "png", "jpeg"],
+  "authors": [
+    {
+      "name": "Björn Hempel",
+      "email": "bjoern@hempel.li",
+      "homepage": "https://www.hempel.li/"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Ixnode\\PhpCliImage\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Ixnode\\PhpCliImage\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "ext-curl": "*",
+    "ext-gd": "*",
+    "ixnode/php-exception": "^0.1.21",
+    "adhocore/cli": "^v1.0.0",
+    "ixnode/php-coordinate": "^0.1.17"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "phpstan/phpstan": "^1.9",
+    "rector/rector": "^0.15.1",
+    "phpmd/phpmd": "^2.13",
+    "friendsofphp/php-cs-fixer": "^3.13",
+    "ixnode/bash-version-manager": "^0.1.3",
+    "povils/phpmnd": "^3.0",
+    "jetbrains/phpstorm-attributes": "^1.0"
+  },
+  "bin": [
+    "bin/php-cli-image"
+  ],
+  "scripts": {
+    "ixno:header": "bin/header/ixno",
+
+    "phpmnd:all": "bin/header/phpmnd 'vendor/bin/phpmnd run src tests --progress --hint --include-numeric-string --ignore-funcs=round,sleep' 'all'",
+    "phpmnd": [
+      "@phpmnd:all"
+    ],
+
+    "phpmd": "bin/header/phpmnd 'phpmd src,tests text cleancode,codesize,controversial,design,naming,unusedcode' 'all'",
+
+    "phpunit": "bin/header/phpunit 'phpunit --stop-on-failure tests' 'Unit'",
+
+    "phpstan:default": "bin/header/phpstan 'phpstan analyse --level max --memory-limit 512M --xdebug src tests' 'run'",
+    "phpstan:xdebug": "bin/header/phpstan 'phpstan analyse --level max --memory-limit 512M --xdebug src tests' 'run'",
+    "phpstan": "@phpstan:default",
+
+    "phpcs:check": "bin/header/phpcs 'php-cs-fixer --dry-run --using-cache=no --rules=@PSR12 --rules=no_unused_imports --verbose fix src 2>/dev/null && php-cs-fixer --dry-run --using-cache=no --rules=@PSR12 --rules=no_unused_imports --verbose fix tests 2>/dev/null' 'all'",
+    "phpcs:fix": "bin/header/phpcs 'php-cs-fixer --using-cache=no --rules=@PSR12 --rules=no_unused_imports --verbose fix src 2>/dev/null && php-cs-fixer --using-cache=no --rules=@PSR12 --rules=no_unused_imports --verbose fix tests 2>/dev/null' 'all'",
+    "phpcs": "@phpcs:check",
+
+    "rector": "bin/header/rector 'rector process --dry-run --clear-cache --memory-limit=512M' 'check, force'",
+
+    ".test:basic": [
+      "@ixno:header",
+      "@phpunit",
+      "@phpstan"
+    ],
+    "test:basic": [
+      "composer .test:basic && bin/header/success || bin/header/error"
+    ],
+    ".test:most": [
+      "@ixno:header",
+      "@phpmnd",
+      "@phpunit",
+      "@phpstan",
+      "@phpmd"
+    ],
+    "test:most": [
+      "composer .test:most && bin/header/success || bin/header/error"
+    ],
+    ".test:all": [
+      "@ixno:header",
+      "@phpmnd",
+      "@phpunit",
+      "@phpstan",
+      "@phpmd"
+    ],
+    "test:all": [
+      "composer .test:all && bin/header/success || bin/header/error"
+    ],
+    ".test:hardcore": [
+      "@ixno:header",
+      "@phpmnd",
+      "@phpunit",
+      "@phpstan",
+      "@phpmd",
+      "@rector"
+    ],
+    "test:hardcore": [
+      "composer .test:hardcore && bin/header/success || bin/header/error"
+    ],
+    "test": [
+      "@test:all"
+    ]
+  },
+  "scripts-descriptions": {
+    ".test:all": "Not used (Hidden command).",
+    ".test:basic": "Not used (Hidden command).",
+    ".test:hardcore": "Not used (Hidden command).",
+    ".test:most": "Not used (Hidden command).",
+
+    "ixno:header": "Shows ixno test header.",
+
+    "phpcs:check": "Runs PHP Coding Standards Fixer (Dry-Run, all folders).",
+    "phpcs:fix": "Runs PHP Coding Standards Fixer (Fix, all folders).",
+    "phpcs": "Runs PHP Coding Standards Fixer (Dry-Run, all folders).",
+
+    "phpmd": "Runs PHP Mess Detector and checks all types (all folders).",
+
+    "phpmnd:all": "Runs PHP Magic Number Detector and detects magic numbers.",
+    "phpmnd": "Runs PHP Magic Number Detector and detects magic numbers.",
+
+    "phpstan:default": "Runs PHPStan (PHP Static Analysis Tool).",
+    "phpstan:xdebug": "Runs PHPStan (PHP Static Analysis Tool with xdebug setting).",
+    "phpstan": "Runs PHPStan (PHP Static Analysis Tool).",
+
+    "phpunit": "Runs PHPUnit unit tests (all tests).",
+
+    "rector": "Runs PHP Rector (Dry-Run).",
+
+    "test": "Runs all available tests (phpmnd, phpunit, phpstan, phpcs, rector, etc.).",
+
+    "test:all": "Runs all available tests (phpmnd, phpunit, phpstan, phpcs, phpmd).",
+    "test:hardcore": "Runs the ultimate available tests (phpmnd, phpunit, phpstan, phpcs, rector, phpmd).",
+    "test:most": "Runs most tests (phpmnd, phpunit, phpstan, phpcs).",
+    "test:basic": "Runs basic tests (phpunit, phpstan)."
+  }
+}

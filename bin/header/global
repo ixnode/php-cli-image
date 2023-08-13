@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# ------------
+# This script prints the base header for given string
+#
+# @author    Björn Hempel <bjoern@hempel.li>
+# @version   0.1.0 (2022-12-18)
+# ------------
+
+HEADER=$1
+COMMAND="$2"
+DESCRIPTION="$3"
+
+[ "$DESCRIPTION" != "" ] && HEADER="$HEADER ($DESCRIPTION)"
+
+# ------------
+# Checks if a given application exists
+#
+# @author  Björn Hempel
+# @version 1.0
+# ------------
+function application_exists()
+{
+    `which $1 >/dev/null`
+}
+
+# ------------
+# Returns the current time in milliseconds.
+#
+# @author  Björn Hempel
+# @version 1.0
+# ------------
+function get_time()
+{
+    # Use mac gdate
+    if application_exists 'gdate'; then
+        echo $(gdate +%s%3N)
+        return 0
+    fi
+
+    # In bash 5.0 we do have $EPOCHREALTIME
+    if [ ! -z ${EPOCHREALTIME} ]; then
+        printf "%.3f" ${EPOCHREALTIME} | tr -d '.' | tr -d ','
+        return 0
+    fi
+
+    # Last option to use date (this works not correctly on a mac).
+    echo $(($(date +'%s * 1000 + %-N / 1000000')))
+}
+
+START_COLOR='\e[48;2;97;175;239m\e[38;2;9;16;22m'
+END_COLOR='\e[0m'
+
+printf "\n"
+printf "%b┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐%b\n" "$START_COLOR" "$END_COLOR"
+printf "%b│                                                                                                                      │%b\n" "$START_COLOR" "$END_COLOR"
+printf "%b│ %-116s │%b\n" "$START_COLOR" ">>> $HEADER <<<" "$END_COLOR"
+printf "%b│                                                                                                                      │%b\n" "$START_COLOR" "$END_COLOR"
+printf "%b└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘%b\n" "$START_COLOR" "$END_COLOR"
+printf "\n"
+
+START_TIME=$(get_time)
+
+eval "$COMMAND"
+RETURN_CODE=$?
+
+END_TIME=$(get_time)
+
+ELAPSED=$((END_TIME-START_TIME))
+
+printf "\n"
+printf " Time taken: %d ms\n" "$ELAPSED"
+printf "\n"
+printf "\n"
+
+exit $RETURN_CODE
+

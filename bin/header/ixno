@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# ------------
+# This script prints the rsm header
+#
+# @author    Björn Hempel <bjoern@hempel.li>
+# @version   0.1.0 (2022-12-18)
+# ------------
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+VERSION_PATH="$SCRIPT_DIR/../../VERSION"
+VERSION=$(cat $VERSION_PATH)
+
+HEADER1="PHPNamingConventions (PNC)"
+HEADER2="Version: $VERSION"
+HEADER3="Copyright (c) 2022 björn hempel <bjoern@hempel.li>"
+
+echo
+printf " ┌───┐ ┌───┐ ┌───┐ ┌───┐  "
+printf "$HEADER1"
+echo
+printf " │ I │ │ X │ │ N │ │ O │  "
+printf "$HEADER2"
+echo
+printf " └───┘ └───┘ └───┘ └───┘  "
+printf "$HEADER3"
+echo
+echo
+echo

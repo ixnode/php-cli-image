@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# ------------
+# This script prints a success message
+#
+# @author    Björn Hempel <bjoern@hempel.li>
+# @version   0.1.0 (2022-12-18)
+# ------------
+
+HEADER="Success - Good job! All tests were performed successfully.    \o/   "
+
+START_COLOR='\e[48;2;152;195;121m\e[38;2;9;16;22m'
+END_COLOR='\e[0m'
+
+printf "\n"
+printf "%b┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐%b\n" "$START_COLOR" "$END_COLOR"
+printf "%b│                                                                                                                      │%b\n" "$START_COLOR" "$END_COLOR"
+printf "%b│ %-116s │%b\n" "$START_COLOR" ">>> $HEADER <<<" "$END_COLOR"
+printf "%b│                                                                                                                      │%b\n" "$START_COLOR" "$END_COLOR"
+printf "%b└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘%b\n" "$START_COLOR" "$END_COLOR"
+printf "\n"
+

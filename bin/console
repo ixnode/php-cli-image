@@ -1,0 +1,51 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of the ixnode/php-date-parser project.
+ *
+ * (c) Björn Hempel <https://www.hempel.li/>
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+$autoload = dirname(__DIR__).'/vendor/autoload.php';
+
+if (!file_exists($autoload)) {
+    $autoload = dirname(__DIR__, 4).'/vendor/autoload.php';
+}
+
+require $autoload;
+
+use Ahc\Cli\Application;
+use Ixnode\PhpCliImage\Command\CliImageCommand;
+
+$versionFile = dirname(__DIR__).'/VERSION';
+
+if (!file_exists($versionFile)) {
+    throw new Exception(sprintf('Unable to find file "%s".', $versionFile));
+}
+
+$versionFileModification = filemtime($versionFile);
+
+$versionFileDate = date('Y-m-d H:i:s', $versionFileModification);
+
+$version = trim(file_get_contents($versionFile));
+
+$author = 'Björn Hempel <bjoern@hempel.li>';
+
+$versionString = sprintf(
+    '%s (%s) - %s',
+    $version,
+    $versionFileDate,
+    $author
+);
+
+$app = new Application('PHP Cli Image', $versionString);
+
+$app->add(new CliImageCommand(), 'ci');
+
+$app->handle($_SERVER['argv']);
