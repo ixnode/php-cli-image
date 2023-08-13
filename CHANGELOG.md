@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Releases
 
-### [0.1.0] - 2023-07-03
+### [0.1.0] - 2023-08-14
 
-* Initial release with first Coordinate parser and converter
+* Initial release with first CliImage builder and converter
 * Add src
 * Add tests
   * PHP Coding Standards Fixer
