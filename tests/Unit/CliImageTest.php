@@ -15,9 +15,7 @@ namespace Ixnode\PhpCliImage\Tests\Unit;
 
 use Ixnode\PhpCliImage\CliImage;
 use Ixnode\PhpContainer\File;
-use Ixnode\PhpCoordinate\Coordinate;
 use Ixnode\PhpException\Case\CaseUnsupportedException;
-use Ixnode\PhpException\Parser\ParserException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,14 +32,14 @@ final class CliImageTest extends TestCase
      * Test wrapper.
      *
      * @dataProvider dataProviderSimple
-     * @dataProvider dataProviderCoordinates
+     * @dataProvider dataProviderMarker
      *
      * @test
      * @testdox $number) Test CliImage: Method getAsciiString.
      * @param int $number
      * @param string $path
      * @param int $with
-     * @param array<string, Coordinate>|null $coordinates
+     * @param array<string, array<int, float>>|null $coordinates
      * @param float|string $expected
      * @throws CaseUnsupportedException
      */
@@ -56,15 +54,17 @@ final class CliImageTest extends TestCase
         /* Arrange */
 
         /* Act */
-        $cliImage = new CliImage(new File($path));
+        $cliImage = new CliImage(new File($path), $with);
         if (is_array($coordinates)) {
-            $cliImage->setCoordinates($coordinates);
+            foreach ($coordinates as $color => $coordinate) {
+                $cliImage->addCoordinateSpherical($color, $coordinate[0], $coordinate[1]);
+            }
         }
 
         /* Assert */
         $this->assertIsNumeric($number); // To avoid phpmd warning.
 
-        $result = $cliImage->getAsciiString($with);
+        $result = $cliImage->getAsciiString();
 
         $this->assertSame($expected, $result);
     }
@@ -89,25 +89,24 @@ final class CliImageTest extends TestCase
     }
 
     /**
-     * Data provider (coordinates).
+     * Data provider (marker).
      *
      * @return array<int, array<int, string|int|float|null|array<string, mixed>>>
      * @throws CaseUnsupportedException
-     * @throws ParserException
      */
-    public function dataProviderCoordinates(): array
+    public function dataProviderMarker(): array
     {
         $number = 0;
 
         return [
 
             /**
-             * Check simple images.
+             * Check images with marker.
              */
             [++$number, 'docs/image/world-map.png', 80, [
-                '#ff0000' => new Coordinate(40.71, -74.01),
-                '#00ff00' => new Coordinate(59.91, 10.75),
-                '#0000ff' => new Coordinate(.0, .0),
+                '#ff0000' => [40.71, -74.01],
+                '#00ff00' => [59.91, 10.75],
+                '#0000ff' => [.0, .0],
             ], $this->getAsciiStringWorldMap('docs/text/world-map-coordinates.txt')],
         ];
     }

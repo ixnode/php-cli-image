@@ -19,7 +19,6 @@ use Ahc\Cli\Output\Writer;
 use Exception;
 use Ixnode\PhpContainer\File;
 use Ixnode\PhpCliImage\CliImage;
-use Ixnode\PhpCoordinate\Coordinate;
 
 /**
  * Class CliImageCommand
@@ -90,16 +89,16 @@ class CliImageCommand extends Command
             return self::INVALID;
         }
 
-        $image = new CliImage($file);
-        $image->addCoordinate('#ff0000', new Coordinate(40.71, -74.01));
-        $image->addCoordinate('#00ff00', new Coordinate(59.91, 10.75));
-        $image->addCoordinate('#0000ff', new Coordinate(.0, .0));
-
         $width = 80;
-        $this->writer->write($image->getAsciiString($width), true);
+        $image = new CliImage($file, $width);
+        $image->addCoordinateSpherical('#ff0000', 40.71, -74.01);
+        $image->addCoordinateSpherical('#00ff00', 59.91, 10.75);
+        $image->addCoordinateSpherical('#0000ff', .0, .0);
+
+        $this->writer->write($image->getAsciiString(), true);
 
         if (!is_null($this->pathOutput)) {
-            file_put_contents($this->pathOutput, $image->getAsciiString($width));
+            file_put_contents($this->pathOutput, $image->getAsciiString());
             $this->writer->write('---', true);
             $this->writer->write(sprintf('Image saved to "%s".', $this->pathOutput), true);
             $this->writer->write('---', true);

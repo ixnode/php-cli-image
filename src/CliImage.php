@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Ixnode\PhpCliImage;
 
 use GdImage;
+use Ixnode\PhpCliImage\Utils\Point;
 use Ixnode\PhpContainer\File;
 use Ixnode\PhpCliImage\Tests\Unit\CliImageTest;
 use Ixnode\PhpCliImage\Utils\Color;
-use Ixnode\PhpCoordinate\Coordinate;
 use Ixnode\PhpException\Case\CaseUnsupportedException;
 
 /**
@@ -35,14 +35,24 @@ class CliImage
 
     protected const NAME_TRANSPARENT = 'transparent';
 
-    /** @var array<string, Coordinate> $coordinates */
-    protected array $coordinates = [];
+    /** @var array<string, Point> $points */
+    protected array $points = [];
+
+    protected GdImage $gdImage;
 
     /**
      * @param File $file
+     * @param int $width
+     * @throws CaseUnsupportedException
      */
-    public function __construct(protected File $file)
+    public function __construct(protected File $file, protected int $width = 80)
     {
+        $this->gdImage = $this->resizeImageGd(
+            $this->createGdImageFromGivenPath(
+                $this->file->getPath()
+            ),
+            $width
+        );
     }
 
     /**
@@ -110,59 +120,18 @@ class CliImage
     }
 
     /**
-     * Returns the converted point on map.
-     *
-     * - see https://en.wikipedia.org/wiki/Kavrayskiy_VII_projection
-     *
-     * @param GdImage $gdImage
-     * @param Coordinate $point
-     * @return array{x: int, y: int}
-     */
-    private function getPoint(GdImage $gdImage, Coordinate $point): array
-    {
-        $width = imagesx($gdImage);
-        $height = imagesy($gdImage);
-
-        /* Map scale */
-        $widthMap = $width * 1.42;
-        $heightMap = $height * 1.25;
-
-        /* Map center */
-        $xMove = -1 * $widthMap * .17;
-        $yMove = -1 * $heightMap * .01;
-
-        $widthDegree = $widthMap / 360;
-        $heightDegree = $heightMap / 180;
-
-        $pointXMiddle = $widthMap / 2 + $xMove;
-        $pointYMiddle = $heightMap / 2 + $yMove;
-
-        $latitudeRadian = deg2rad($point->getLatitude());
-        $longitudeRadian = deg2rad($point->getLongitude());
-
-        /* https://en.wikipedia.org/wiki/Kavrayskiy_VII_projection */
-        $longitude = rad2deg(3 * $longitudeRadian / 2 * sqrt(1/3 - ($latitudeRadian / pi()) ** 2));
-        $latitude = $point->getLatitude();
-
-        return [
-            'x' => (int) round($pointXMiddle + $longitude * $widthDegree),
-            'y' => (int) round($pointYMiddle - $latitude * $heightDegree),
-        ];
-    }
-
-    /**
      * Returns the real color or color of marker.
      *
      * @param int $cell
      * @param int $line
      * @param string $color
-     * @param array<string, array{x: int, y: int}> $points
+     * @param array<string, Point> $points
      * @return string
      */
     private function getColor(int $cell, int $line, string $color, array $points): string
     {
         foreach ($points as $colorPoint => $point) {
-            if ($cell === $point['x'] && $line === $point['y']) {
+            if ($cell === (int) $point->getX() && $line === (int) $point->getY()) {
                 return $colorPoint;
             }
         }
@@ -173,21 +142,16 @@ class CliImage
     /**
      * Converts given image to string.
      *
-     * @param GdImage $gdImage
-     * @param array<string, Coordinate> $points
      * @return array<int, string>
      * @throws CaseUnsupportedException
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    protected function convertImageToLines(GdImage $gdImage, array $points): array
+    protected function convertImageToLines(): array
     {
-        $width = imagesx($gdImage);
-        $height = imagesy($gdImage);
+        $width = imagesx($this->gdImage);
+        $height = imagesy($this->gdImage);
 
-        $pointMarkers = [];
-        foreach ($points as $color => $point) {
-            $pointMarkers[$color] = $this->getPoint($gdImage, $point);
-        }
+        $points = $this->getPoints();
 
         $lines = [];
         for ($lineY = 0; $lineY < floor($height / 2); $lineY++) {
@@ -196,8 +160,8 @@ class CliImage
                 $lineYTop = 2 * $lineY;
                 $lineYBottom = 2 * $lineY + 1;
 
-                $colorTop = imagecolorat($gdImage, $cellX, $lineYTop);
-                $colorBottom = $lineYBottom + 1 <= $height ? imagecolorat($gdImage, $cellX, $lineYBottom) : null;
+                $colorTop = imagecolorat($this->gdImage, $cellX, $lineYTop);
+                $colorBottom = $lineYBottom + 1 <= $height ? imagecolorat($this->gdImage, $cellX, $lineYBottom) : null;
 
                 if ($colorTop === false) {
                     throw new CaseUnsupportedException('Unable to get pixel from image.');
@@ -207,8 +171,8 @@ class CliImage
                 }
 
                 $line .= $this->get1x2Pixel(
-                    $this->getColor($cellX, $lineYTop, Color::convertIntToHex($colorTop), $pointMarkers),
-                    $this->getColor($cellX, $lineYBottom, $colorBottom === null ? self::NAME_TRANSPARENT : Color::convertIntToHex($colorBottom), $pointMarkers),
+                    $this->getColor($cellX, $lineYTop, Color::convertIntToHex($colorTop), $points),
+                    $this->getColor($cellX, $lineYBottom, $colorBottom === null ? self::NAME_TRANSPARENT : Color::convertIntToHex($colorBottom), $points),
                 );
             }
             $lines[] = sprintf('%s', $line);
@@ -298,37 +262,33 @@ class CliImage
     /**
      * Returns the ascii representation of the image (string array).
      *
-     * @param int $width
      * @return array<int, string>
      * @throws CaseUnsupportedException
      */
-    public function getAsciiLines(int $width): array
+    public function getAsciiLines(): array
     {
-        $gdImage = $this->resizeImageGd($this->createGdImageFromGivenPath($this->file->getPath()), $width);
-
-        return $this->convertImageToLines($gdImage, $this->getCoordinates());
+        return $this->convertImageToLines();
     }
 
     /**
      * Returns the ascii representation of the image (string).
      *
-     * @param int $width
      * @return string
      * @throws CaseUnsupportedException
      */
-    public function getAsciiString(int $width): string
+    public function getAsciiString(): string
     {
-        return implode(PHP_EOL, $this->getAsciiLines($width));
+        return implode(PHP_EOL, $this->getAsciiLines());
     }
 
     /**
      * Returns the given coordinates.
      *
-     * @return array<string, Coordinate>
+     * @return array<string, Point>
      */
-    public function getCoordinates(): array
+    public function getPoints(): array
     {
-        return $this->coordinates;
+        return $this->points;
     }
 
     /**
@@ -336,16 +296,16 @@ class CliImage
      *
      * Format:
      * [
-     *     'color1' => new Coordinate(),
-     *     'color2' => Coordinate,
+     *     'color1' => new Point(x, y),
+     *     'color2' => new Point(x, y),
      * ]
      *
-     * @param array<string, Coordinate> $coordinates
+     * @param array<string, Point> $points
      * @return self
      */
-    public function setCoordinates(array $coordinates): self
+    public function setPoints(array $points): self
     {
-        $this->coordinates = $coordinates;
+        $this->points = $points;
         return $this;
     }
 
@@ -353,13 +313,70 @@ class CliImage
      * Adds the given coordinate.
      *
      * @param string $color
-     * @param Coordinate $coordinate
+     * @param Point $point
      * @return self
      */
-    public function addCoordinate(string $color, Coordinate $coordinate): self
+    public function addCoordinate(string $color, Point $point): self
     {
-        $this->coordinates[$color] = $coordinate;
+        $this->points[$color] = $point;
 
         return $this;
+    }
+
+    /**
+     * Adds the given spherical coordinate.
+     *
+     * @param string $color
+     * @param float $latitude
+     * @param float $longitude
+     * @param string $typeProjection
+     * @return self
+     * @throws CaseUnsupportedException
+     */
+    public function addCoordinateSpherical(
+        string $color,
+        float $latitude,
+        float $longitude,
+        string $typeProjection = Point::TYPE_PROJECTION_KAVRAYSKIY_VII
+    ): self
+    {
+        $this->points[$color] = new Point(
+            $latitude,
+            $longitude,
+            Point::TYPE_COORDINATE_SYSTEM_SPHERICAL,
+            $typeProjection,
+            $this->getGdImageWidth(),
+            $this->getGdImageHeight()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @return GdImage
+     */
+    public function getGdImage(): GdImage
+    {
+        return $this->gdImage;
+    }
+
+    /**
+     * Returns the width of the GdImage object.
+     *
+     * @return int
+     */
+    public function getGdImageWidth(): int
+    {
+        return imagesx($this->gdImage);
+    }
+
+    /**
+     * Returns the height of the GdImage object.
+     *
+     * @return int
+     */
+    public function getGdImageHeight(): int
+    {
+        return imagesy($this->gdImage);
     }
 }
