@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Releases
 
+### [0.1.1] - 2023-08-14
+
+* Refactoring
+* Add new Point class
+
 ### [0.1.0] - 2023-08-14
 
 * Initial release with first CliImage builder and converter
