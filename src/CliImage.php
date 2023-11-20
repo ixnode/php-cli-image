@@ -41,15 +41,24 @@ class CliImage
     protected GdImage $gdImage;
 
     /**
-     * @param File $file
+     * @param File|string $image
      * @param int $width
      * @throws CaseUnsupportedException
      */
-    public function __construct(protected File $file, protected int $width = 80)
+    public function __construct(protected File|string $image, protected int $width = 80)
     {
+        if (is_string($this->image)) {
+            $this->gdImage = $this->resizeImageGd(
+                $this->createGdImageFromGivenImageString($this->image),
+                $width
+            );
+
+            return;
+        }
+
         $this->gdImage = $this->resizeImageGd(
             $this->createGdImageFromGivenPath(
-                $this->file->getPath()
+                $this->image->getPath()
             ),
             $width
         );
@@ -75,7 +84,7 @@ class CliImage
     }
 
     /**
-     * Creates image from given path.
+     * Creates image from the given path.
      *
      * @param string $path
      * @return GdImage
@@ -95,6 +104,24 @@ class CliImage
 
         if ($gdImage === false) {
             throw new CaseUnsupportedException('Unable to load image.');
+        }
+
+        return $gdImage;
+    }
+
+    /**
+     * Creates image from the given image string.
+     *
+     * @param string $imageString
+     * @return GdImage
+     * @throws CaseUnsupportedException
+     */
+    protected function createGdImageFromGivenImageString(string $imageString): GdImage
+    {
+        $gdImage = imagecreatefromstring($imageString);
+
+        if (!$gdImage instanceof GdImage) {
+            throw new CaseUnsupportedException('Unable to create image.');
         }
 
         return $gdImage;

@@ -73,6 +73,7 @@ final class CliImageTest extends TestCase
      * Data provider (simple).
      *
      * @return array<int, array<int, string|int|float|null|array<string, mixed>>>
+     * @throws CaseUnsupportedException
      */
     public function dataProviderSimple(): array
     {
