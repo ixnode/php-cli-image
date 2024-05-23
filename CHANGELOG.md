@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Releases
 
+### [0.1.3] - 2024-05-24
+
+* Add width option to cli command
+
 ### [0.1.2] - 2023-11-20
 
 * Add image string to CliImage
