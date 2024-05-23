@@ -28,6 +28,7 @@ use Ixnode\PhpCliImage\CliImage;
  * @since 0.1.0 (2023-08-13) First version.
  * @property string|null $pathInput
  * @property string|null $pathOutput
+ * @property string|null $width
  */
 class CliImageCommand extends Command
 {
@@ -47,6 +48,7 @@ class CliImageCommand extends Command
         $this
             ->argument('path-input', 'The path of the image to display.')
             ->argument('path-output', 'The output path of the generated image.')
+            ->option('--width', 'The width of the generated image.', null, 80);
         ;
     }
 
@@ -89,11 +91,11 @@ class CliImageCommand extends Command
             return self::INVALID;
         }
 
-        $width = 80;
+        $width = (int) $this->width;
         $image = new CliImage($file, $width);
-        $image->addCoordinateSpherical('#ff0000', 40.71, -74.01);
-        $image->addCoordinateSpherical('#00ff00', 59.91, 10.75);
-        $image->addCoordinateSpherical('#0000ff', .0, .0);
+//        $image->addCoordinateSpherical('#ff0000', 40.71, -74.01);
+//        $image->addCoordinateSpherical('#00ff00', 59.91, 10.75);
+//        $image->addCoordinateSpherical('#0000ff', .0, .0);
 
         $this->writer->write($image->getAsciiString(), true);
 
