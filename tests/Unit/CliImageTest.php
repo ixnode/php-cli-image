@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Ixnode\PhpCliImage\Tests\Unit;
 
+use ImagickException;
 use Ixnode\PhpCliImage\CliImage;
 use Ixnode\PhpContainer\File;
 use Ixnode\PhpException\Case\CaseUnsupportedException;
@@ -42,6 +43,7 @@ final class CliImageTest extends TestCase
      * @param array<string, array<int, float>>|null $coordinates
      * @param float|string $expected
      * @throws CaseUnsupportedException
+     * @throws ImagickException
      */
     public function wrapper(
         int          $number,

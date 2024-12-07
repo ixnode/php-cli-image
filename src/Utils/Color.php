@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Ixnode\PhpCliImage\Utils;
 
+use ImagickPixel;
+use ImagickPixelException;
 use InvalidArgumentException;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
@@ -220,6 +222,32 @@ class Color
     public static function convertIntToHex(int $color, bool $prependHash = true, bool $lowercase = false): string
     {
         $colorHex = ($prependHash ? self::VALUE_HASH : '').sprintf('%06X', $color);
+
+        if (!$lowercase) {
+            return $colorHex;
+        }
+
+        return strtolower($colorHex);
+    }
+
+    /**
+     * Full color value: Converts given ImagickPixel to hex value.
+     *
+     * @param ImagickPixel $imagickPixel
+     * @param bool $prependHash
+     * @param bool $lowercase
+     * @return string
+     * @throws ImagickPixelException
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     */
+    public static function convertImagickPixelToHex(ImagickPixel $imagickPixel, bool $prependHash = true, bool $lowercase = false): string
+    {
+        $color = $imagickPixel->getColor();
+
+        $colorHex = match ($prependHash) {
+            true => sprintf("#%02x%02x%02x", $color['r'], $color['g'], $color['b']),
+            default => sprintf("%02x%02x%02x", $color['r'], $color['g'], $color['b']),
+        };
 
         if (!$lowercase) {
             return $colorHex;

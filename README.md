@@ -48,7 +48,7 @@ php-cli-image 0.1.0 (03-07-2023 01:17:26) - Björn Hempel <bjoern@hempel.li>
 > Used to quickly check the image output of given image.
 
 ```bash
-bin/console ci docs/image/world-map.png
+bin/console ci docs/image/world-map.png --engine=gd-image --width=80
 ```
 
 or within your composer project:

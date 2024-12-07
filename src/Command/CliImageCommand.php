@@ -17,8 +17,9 @@ use Ahc\Cli\Input\Command;
 use Ahc\Cli\Output\Color;
 use Ahc\Cli\Output\Writer;
 use Exception;
-use Ixnode\PhpContainer\File;
+use Imagick;
 use Ixnode\PhpCliImage\CliImage;
+use Ixnode\PhpContainer\File;
 
 /**
  * Class CliImageCommand
@@ -29,6 +30,7 @@ use Ixnode\PhpCliImage\CliImage;
  * @property string|null $pathInput
  * @property string|null $pathOutput
  * @property string|null $width
+ * @property string|null $engine
  */
 class CliImageCommand extends Command
 {
@@ -48,7 +50,8 @@ class CliImageCommand extends Command
         $this
             ->argument('path-input', 'The path of the image to display.')
             ->argument('path-output', 'The output path of the generated image.')
-            ->option('--width', 'The width of the generated image.', null, 80);
+            ->option('--width', 'The width of the generated image.', null, 80)
+            ->option('--engine', 'The engine to be used (imagick, gd-image).', null, CliImage::ENGINE_GD_IMAGE)
         ;
     }
 
@@ -91,8 +94,14 @@ class CliImageCommand extends Command
             return self::INVALID;
         }
 
+        $engineType = match ($this->engine) {
+            CliImage::ENGINE_GD_IMAGE => CliImage::ENGINE_GD_IMAGE,
+            CliImage::ENGINE_IMAGICK => CliImage::ENGINE_IMAGICK,
+            default => throw new Exception('Unknown engine type given.'),
+        };
+
         $width = (int) $this->width;
-        $image = new CliImage($file, $width);
+        $image = new CliImage(image: $file, width: $width, engineType: $engineType);
 //        $image->addCoordinateSpherical('#ff0000', 40.71, -74.01);
 //        $image->addCoordinateSpherical('#00ff00', 59.91, 10.75);
 //        $image->addCoordinateSpherical('#0000ff', .0, .0);

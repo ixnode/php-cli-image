@@ -25,6 +25,7 @@
     "php": "^8.2",
     "ext-curl": "*",
     "ext-gd": "*",
+    "ext-imagick": "*",
     "ixnode/php-exception": "^0.1.21",
     "adhocore/cli": "^v1.0.0"
   },
