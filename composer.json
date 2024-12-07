@@ -1,7 +1,7 @@
 {
   "name": "ixnode/php-cli-image",
   "description": "PHP Cli Image - This library converts a given image to ASCII string.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "library",
   "license": "MIT",
   "keywords": ["php", "cli", "image", "ascii", "gif", "jpg", "png", "jpeg"],
