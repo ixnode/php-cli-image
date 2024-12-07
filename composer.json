@@ -29,7 +29,7 @@
     "ext-imagick": "*",
     "ixnode/php-exception": "^0.1.21",
     "adhocore/cli": "^v1.0.0",
-    "ixnode/php-coordinate": "^0.1.17"
+    "ixnode/php-coordinate": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5",

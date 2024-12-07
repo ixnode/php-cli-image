@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "901e26f4894f4367b97ace683f9d214d",
+    "content-hash": "028cb75aba1beb8ef5d0c7acd3b3d6e6",
     "packages": [
         {
             "name": "adhocore/cli",
@@ -78,22 +78,23 @@
         },
         {
             "name": "ixnode/php-coordinate",
-            "version": "0.1.17",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ixnode/php-coordinate.git",
-                "reference": "cc69b739a91c651b8d471d3d9ae64bb644c53e25"
+                "reference": "cf982b080c75e6adbb347f357bf4598c5aacb9f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ixnode/php-coordinate/zipball/cc69b739a91c651b8d471d3d9ae64bb644c53e25",
-                "reference": "cc69b739a91c651b8d471d3d9ae64bb644c53e25",
+                "url": "https://api.github.com/repos/ixnode/php-coordinate/zipball/cf982b080c75e6adbb347f357bf4598c5aacb9f2",
+                "reference": "cf982b080c75e6adbb347f357bf4598c5aacb9f2",
                 "shasum": ""
             },
             "require": {
                 "adhocore/cli": "^v1.0.0",
                 "ext-curl": "*",
                 "ext-gd": "*",
+                "ixnode/php-cli-image": "^1.0",
                 "ixnode/php-exception": "^0.1.21",
                 "php": "^8.2"
             },
@@ -138,9 +139,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ixnode/php-coordinate/issues",
-                "source": "https://github.com/ixnode/php-coordinate/tree/0.1.17"
+                "source": "https://github.com/ixnode/php-coordinate/tree/1.0.0"
             },
-            "time": "2023-08-01T18:43:16+00:00"
+            "time": "2024-12-07T11:49:20+00:00"
         },
         {
             "name": "ixnode/php-exception",
