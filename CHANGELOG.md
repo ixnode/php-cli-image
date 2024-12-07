@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Releases
 
+### [1.0.1] - 2024-12-07
+
+* Add ixnode/php-coordinate package with version 0.1.17
+
 ### [1.0.0] - 2024-12-07
 
 * Implement Imagick engine in addition to GdImage
